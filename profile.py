@@ -162,11 +162,19 @@ import geni.rspec.igext as ig
 # Global Variables
 x310_node_disk_image = \
         "urn:publicid:IDN+emulab.net+image+emulab-ops//UBUNTU18-64-STD"
+meas_disk_image = \
+        "urn:publicid:IDN+emulab.net+image+PowderTeam:U18-GR-PBUF"
 setup_command = "/local/repository/startup.sh"
 installs = ["gnuradio"]
+nuc_image = meas_disk_image
 
 # Top-level request object.
 request = portal.context.makeRequestRSpec()
+
+# Start VNC?
+portal.context.defineParameter("start_vnc", 
+                               "Start X11 VNC on all compute nodes",
+                               portal.ParameterType.BOOLEAN, True)
 
 # Helper function that allocates a PC + X310 radio pair, with Ethernet
 # link between them.
@@ -188,6 +196,15 @@ def x310_node_pair(idx, x310_radio_name, node_type, installs):
     radio = request.RawPC("%s-x310" % x310_radio_name)
     radio.component_id = x310_radio_name
     radio_link.addNode(radio)
+
+def b210_node_pair(b210_radio_name, component_manager_id):
+    nuc = ""
+    nuc = request.RawPC("%s-b210" % b210_radio_name)
+    nuc.component_manager_id = component_manager_id
+    nuc.component_id = "nuc2"
+    nuc.disk_image = nuc_image
+    if params.start_vnc:
+        nuc.startVNC()
 
 # Node type parameter for PCs to be paired with X310 radios.
 # Restricted to those that are known to work well with them.
@@ -219,6 +236,30 @@ rooftop_names = [
      "USTAR"),
 ]
 
+# A list of fixed endpoint sites.
+fe_names = [
+    ('urn:publicid:IDN+bookstore.powderwireless.net+authority+cm',
+     "Bookstore"),
+    ('urn:publicid:IDN+cpg.powderwireless.net+authority+cm',
+     "Garage"),
+    ('urn:publicid:IDN+ebc.powderwireless.net+authority+cm',
+     "EBC"),
+    ('urn:publicid:IDN+guesthouse.powderwireless.net+authority+cm',
+     "GuestHouse"),
+    ('urn:publicid:IDN+humanities.powderwireless.net+authority+cm',
+     "Humanities"),
+    ('urn:publicid:IDN+law73.powderwireless.net+authority+cm',
+     "Law73"),
+    ('urn:publicid:IDN+madsen.powderwireless.net+authority+cm',
+     "Madsen"),
+    ('urn:publicid:IDN+moran.powderwireless.net+authority+cm',
+     "Moran"),
+    ('urn:publicid:IDN+sagepoint.powderwireless.net+authority+cm',
+     "SagePoint"),
+    ('urn:publicid:IDN+web.powderwireless.net+authority+cm',
+     "WEB"),
+]
+
 # Frequency/spectrum parameters
 portal.context.defineStructParameter(
     "freq_ranges", "Range", [],
@@ -241,6 +282,93 @@ portal.context.defineStructParameter(
             longDescription="Values are rounded to the nearest kilohertz."
         ),
     ])
+
+# # Set of Fixed Endpoint devices to allocate
+# portal.context.defineStructParameter(
+#     "fe_radios", "Fixed Endpoint B210 Sites",
+#     multiValue=False,
+#     members=[
+#         portal.Parameter(
+#             "Bookstore",
+#             "Fixed Endpoint base-station B210 #1",
+#             portal.ParameterType.STRING,
+#             fe_names[0], 
+#             fe_names,
+#             longDescription="A `nuc2` device will be selected at the site."
+#         ),
+#         portal.Parameter(
+#             "Garage",
+#             "Fixed Endpoint base-station B210 #2",
+#             portal.ParameterType.STRING,
+#             fe_names[1], 
+#             fe_names,
+#             longDescription="A `nuc2` device will be selected at the site."
+#         ),
+#         portal.Parameter(
+#             "EBC",
+#             "Fixed Endpoint base-station B210 #3",
+#             portal.ParameterType.STRING,
+#             fe_names[2], 
+#             fe_names,
+#             longDescription="A `nuc2` device will be selected at the site."
+#         ),
+#         portal.Parameter(
+#             "GuestHouse",
+#             "Fixed Endpoint base-station B210 #4",
+#             portal.ParameterType.STRING,
+#             fe_names[3], 
+#             fe_names,
+#             longDescription="A `nuc2` device will be selected at the site."
+#         ),
+#         portal.Parameter(
+#             "Humanities",
+#             "Fixed Endpoint base-station B210 #5",
+#             portal.ParameterType.STRING,
+#             fe_names[4], 
+#             fe_names,
+#             longDescription="A `nuc2` device will be selected at the site."
+#         ),
+#         portal.Parameter(
+#             "Law73",
+#             "Fixed Endpoint base-station B210 #6",
+#             portal.ParameterType.STRING,
+#             fe_names[5], 
+#             fe_names,
+#             longDescription="A `nuc2` device will be selected at the site."
+#         ),
+#         portal.Parameter(
+#             "Madsen",
+#             "Fixed Endpoint base-station B210 #7",
+#             portal.ParameterType.STRING,
+#             fe_names[6], 
+#             fe_names,
+#             longDescription="A `nuc2` device will be selected at the site."
+#         ),
+#         portal.Parameter(
+#             "Moran",
+#             "Fixed Endpoint base-station B210 #8",
+#             portal.ParameterType.STRING,
+#             fe_names[7], 
+#             fe_names,
+#             longDescription="A `nuc2` device will be selected at the site."
+#         ),
+#         portal.Parameter(
+#             "SagePoint",
+#             "Fixed Endpoint base-station B210 #9",
+#             portal.ParameterType.STRING,
+#             fe_names[8], 
+#             fe_names,
+#             longDescription="A `nuc2` device will be selected at the site."
+#         ),
+#         portal.Parameter(
+#             "WEB",
+#             "Fixed Endpoint base-station B210 #10",
+#             portal.ParameterType.STRING,
+#             fe_names[9], 
+#             fe_names,
+#             longDescription="A `nuc2` device will be selected at the site."
+#         )
+#     ])
     
 # Multi-value list of x310+PC pairs to add to experiment.
 portal.context.defineStructParameter(
@@ -248,17 +376,53 @@ portal.context.defineStructParameter(
     multiValue=False,
     members=[
         portal.Parameter(
-            "radio_name1",
+            "Behavioral",
             "Rooftop base-station X310 #1",
             portal.ParameterType.STRING,
-            rooftop_names[6],
+            rooftop_names[0],
+            rooftop_names),
+        # portal.Parameter(
+        #     "Browning",
+        #     "Rooftop base-station X310 #2",
+        #     portal.ParameterType.STRING,
+        #     rooftop_names[1],
+        #     rooftop_names),
+        # portal.Parameter(
+        #     "Dentistry",
+        #     "Rooftop base-station X310 #3",
+        #     portal.ParameterType.STRING,
+        #     rooftop_names[2],
+        #     rooftop_names),
+        portal.Parameter(
+            "Friendship",
+            "Rooftop base-station X310 #4",
+            portal.ParameterType.STRING,
+            rooftop_names[3],
             rooftop_names),
         portal.Parameter(
-            "radio_name2",
-            "Rooftop base-station X310 #2",
+            "Honors",
+            "Rooftop base-station X310 #5",
             portal.ParameterType.STRING,
             rooftop_names[4],
             rooftop_names)
+        # portal.Parameter(
+        #     "MEB",
+        #     "Rooftop base-station X310 #6",
+        #     portal.ParameterType.STRING,
+        #     rooftop_names[5],
+        #     rooftop_names),
+        # portal.Parameter(
+        #     "SMT",
+        #     "Rooftop base-station X310 #7",
+        #     portal.ParameterType.STRING,
+        #     rooftop_names[6],
+        #     rooftop_names),
+        # portal.Parameter(
+        #     "USTAR",
+        #     "Rooftop base-station X310 #8",
+        #     portal.ParameterType.STRING,
+        #     rooftop_names[7],
+        #     rooftop_names)
     ])
 
 # Bind and verify parameters
@@ -278,10 +442,28 @@ portal.context.verifyParameters()
 # Request frequency range(s)
 for frange in params.freq_ranges:
     request.requestSpectrum(frange.freq_min, frange.freq_max, 100)
-
+        
 # Request PC + X310 resource pairs.
-x310_node_pair(1, params.radios.radio_name1, params.nodetype, installs)
-x310_node_pair(2, params.radios.radio_name2, params.nodetype, installs)
+x310_node_pair(1, params.radios.Behavioral, params.nodetype, installs) # Behavioral
+# x310_node_pair(2, params.radios.Browning, params.nodetype, installs) # Browning
+# x310_node_pair(3, params.radios.Dentistry, params.nodetype, installs) # Dentistry
+x310_node_pair(2, params.radios.Friendship, params.nodetype, installs) # Friendship
+x310_node_pair(3, params.radios.Honors, params.nodetype, installs) # Honors
+# x310_node_pair(6, params.radios.MEB, params.nodetype, installs) # MEB
+# x310_node_pair(7, params.radios.SMT, params.nodetype, installs) # SMT
+# x310_node_pair(8, params.radios.USTAR, params.nodetype, installs) # USTAR
+
+# Request PC + b210 resource pairs.
+# b210_node_pair(params.fe_radios.Bookstore, fe_names[0][0])
+# b210_node_pair(params.fe_radios.Garage, fe_names[1][0])
+# b210_node_pair(params.fe_radios.EBC, fe_names[2][0])
+# b210_node_pair(params.fe_radios.GuestHouse, fe_names[3][0])
+# b210_node_pair(params.fe_radios.Humanities, fe_names[4][0])
+# b210_node_pair(params.fe_radios.Law73, fe_names[5][0])
+# b210_node_pair(params.fe_radios.Madsen, fe_names[6][0])
+# b210_node_pair(params.fe_radios.Moran, fe_names[7][0])
+# b210_node_pair(params.fe_radios.SagePoint, fe_names[8][0])
+# b210_node_pair(params.fe_radios.WEB, fe_names[9][0])
 
 # Emit!
 portal.context.printRequestRSpec()
