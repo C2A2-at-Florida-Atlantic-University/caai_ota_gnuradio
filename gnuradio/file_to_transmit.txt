@@ -1,0 +1,3 @@
+Powder (the Platform for Open Wireless Data-driven Experimental Research) is a facility for experimenting on the future of wireless networking in a city-scale “living laboratory.”
+
+Powder is run by the University of Utah in partnership with Salt Lake City and the Utah Education and Telehealth Network. In addition to state-of-the-art off-the-shelf equipment, Powder will deploy cutting-edge radio hardware and software being developed by the RENEW team lead by Rice University.
