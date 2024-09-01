@@ -9,18 +9,6 @@
 # Author: Jose Sanchez
 # GNU Radio version: 3.8.5.0
 
-from distutils.version import StrictVersion
-
-if __name__ == '__main__':
-    import ctypes
-    import sys
-    if sys.platform.startswith('linux'):
-        try:
-            x11 = ctypes.cdll.LoadLibrary('libX11.so')
-            x11.XInitThreads()
-        except:
-            print("Warning: failed to XInitThreads()")
-
 from gnuradio import blocks
 import pmt
 from gnuradio import gr
@@ -65,7 +53,7 @@ class FileSource_TX(gr.top_block):
         self.uhd_usrp_sink_0.set_bandwidth(0.5e6, 0)
         self.uhd_usrp_sink_0.set_samp_rate(samp_rate)
         self.uhd_usrp_sink_0.set_time_unknown_pps(uhd.time_spec())
-        self.blocks_file_source_0 = blocks.file_source(gr.sizeof_gr_complex*1, '/local/repository/Matlab/'+modulationTypes[self.modulationID]+'.dat', False, 0, 0)
+        self.blocks_file_source_0 = blocks.file_source(gr.sizeof_gr_complex*1, '/local/caai_ota_gnuradio/Matlab/'+modulationTypes[self.modulationID]+'.dat', False, 0, 0)
         self.blocks_file_source_0.set_begin_tag(pmt.PMT_NIL)
 
 
@@ -74,10 +62,6 @@ class FileSource_TX(gr.top_block):
         ##################################################
         self.connect((self.blocks_file_source_0, 0), (self.uhd_usrp_sink_0, 0))
 
-
-    def closeEvent(self, event):
-        self.settings.setValue("geometry", self.saveGeometry())
-        event.accept()
 
     def get_samp_rate(self):
         return self.samp_rate
@@ -99,6 +83,7 @@ def main(top_block_cls=FileSource_TX, options=None, modulationID=0):
     print("Stopping TX")
     tb.stop()
     tb.wait()
+
 
 if __name__ == '__main__':
     print("Modulation ID: ")

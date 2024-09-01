@@ -9,23 +9,9 @@
 # Author: Jose Sanchez
 # GNU Radio version: 3.8.5.0
 
-from distutils.version import StrictVersion
-
-if __name__ == '__main__':
-    import ctypes
-    import sys
-    if sys.platform.startswith('linux'):
-        try:
-            x11 = ctypes.cdll.LoadLibrary('libX11.so')
-            x11.XInitThreads()
-        except:
-            print("Warning: failed to XInitThreads()")
-
-from gnuradio import qtgui
-from gnuradio.filter import firdes
-import sip
 from gnuradio import blocks
 from gnuradio import gr
+from gnuradio.filter import firdes
 import sys
 import signal
 from argparse import ArgumentParser
@@ -75,9 +61,6 @@ class FileWrite_RX(gr.top_block):
         ##################################################
         self.connect((self.uhd_usrp_source_0, 0), (self.blocks_file_sink_0, 0))
 
-    def closeEvent(self, event):
-        self.settings.setValue("geometry", self.saveGeometry())
-        event.accept()
 
     def get_samp_rate(self):
         return self.samp_rate
@@ -100,6 +83,7 @@ def main(top_block_cls=FileWrite_RX, options=None, modulationID=0):
     print("Stopping RX")
     tb.stop()
     tb.wait()
+
 
 if __name__ == '__main__':
     print("Modulation ID: ")

@@ -123,7 +123,7 @@ class OFDM_TX_RX_1(gr.top_block, Qt.QWidget):
         self.blocks_repack_bits_bb_0_0 = blocks.repack_bits_bb(8, 1, length_tag_key, False, gr.GR_LSB_FIRST)
         self.blocks_repack_bits_bb_0 = blocks.repack_bits_bb(8, payload_mod.bits_per_symbol(), length_tag_key, False, gr.GR_LSB_FIRST)
         self.blocks_multiply_const_vxx_0 = blocks.multiply_const_cc(0.05)
-        self.blocks_file_source_0 = blocks.file_source(gr.sizeof_char*1, '/local/repository/gnuradio/file_to_transmit.txt', False, 0, 0)
+        self.blocks_file_source_0 = blocks.file_source(gr.sizeof_char*1, '/local/caai_ota_gnuradio/gnuradio/file_to_transmit.txt', False, 0, 0)
         self.blocks_file_source_0.set_begin_tag(pmt.PMT_NIL)
 
 
