@@ -72,14 +72,14 @@ class IQFile:
     
     
 if __name__ == '__main__':
-    modulationTypes = ['8PSK', '16QAM', '64QAM', 'B-FM', 'BPSK', 'CPFSK', 'DSB-AM', 'GFSK', 'PAM4', 'QPSK', 'SSB-AM']
-    nodes = ["friendship", "behavioral"]
+    modulationTypes = ['BPSK'] #['8PSK', '16QAM', '64QAM', 'B-FM', 'BPSK', 'CPFSK', 'DSB-AM', 'GFSK', 'PAM4', 'QPSK', 'SSB-AM']
+    nodes = ["EBC"] #["friendship", "behavioral"]
     dataFolder = "/Users/josea/Documents/powder/"
     for node in nodes:
         print(node)
         for modulation in modulationTypes:
             print(modulation)
-            iqFile = IQFile(file_path=dataFolder+node+"/tmp/"+modulation+".iq")
+            iqFile = IQFile(file_path=dataFolder+node+"/"+modulation+".iq")
             iqFile.read()
             iqFile.print_info()
             iqFile.plot(num_samples=8192*4, title=node+" node "+modulation+" IQ samples graph")

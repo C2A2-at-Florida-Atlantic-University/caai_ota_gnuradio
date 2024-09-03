@@ -10,7 +10,7 @@ options:
     gen_linking: dynamic
     generate_options: qt_gui
     hier_block_src_path: '.:'
-    id: FileSource_TX
+    id: FileWrite_RX
     max_nouts: '0'
     output_language: python
     placement: (0,0)
@@ -21,7 +21,7 @@ options:
     run_options: prompt
     sizing_mode: fixed
     thread_safe_setters: ''
-    title: FileSource_TX
+    title: FileWrite_RX
     window_size: 2000,1500
   states:
     bus_sink: false
@@ -32,6 +32,63 @@ options:
     state: enabled
 
 blocks:
+- name: Bandwidth
+  id: variable
+  parameters:
+    comment: ''
+    value: 0.5e6
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [464, 12.0]
+    rotation: 0
+    state: true
+- name: Freq
+  id: variable
+  parameters:
+    comment: ''
+    value: 3.555e9
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [280, 4.0]
+    rotation: 0
+    state: true
+- name: Gain
+  id: variable
+  parameters:
+    comment: ''
+    value: '31'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [392, 4.0]
+    rotation: 0
+    state: disabled
+- name: Gain
+  id: variable_qtgui_range
+  parameters:
+    comment: ''
+    gui_hint: ''
+    label: ''
+    min_len: '200'
+    orient: Qt.Horizontal
+    rangeType: float
+    start: '0'
+    step: '1'
+    stop: '100'
+    value: '31'
+    widget: counter_slider
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [608, 16.0]
+    rotation: 0
+    state: true
 - name: samp_rate
   id: variable
   parameters:
@@ -41,32 +98,32 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [160, 8]
+    coordinate: [166, 6]
     rotation: 0
     state: enabled
-- name: blocks_file_source_0
-  id: blocks_file_source
+- name: analog_sig_source_x_0
+  id: analog_sig_source_x
   parameters:
     affinity: ''
     alias: ''
-    begin_tag: pmt.PMT_NIL
+    amp: '1'
     comment: ''
-    file: /local/caai_ota_gnuradio/Matlab/data_DSB-AM.dat
-    length: '0'
+    freq: '1000'
     maxoutbuf: '0'
     minoutbuf: '0'
     offset: '0'
-    repeat: 'False'
+    phase: '0'
+    samp_rate: samp_rate
     type: complex
-    vlen: '1'
+    waveform: analog.GR_SIN_WAVE
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [24, 208.0]
+    coordinate: [40, 152.0]
     rotation: 0
-    state: enabled
-- name: qtgui_time_sink_x_0
+    state: true
+- name: qtgui_time_sink_x_0_0
   id: qtgui_time_sink_x
   parameters:
     affinity: ''
@@ -119,7 +176,7 @@ blocks:
     marker7: '-1'
     marker8: '-1'
     marker9: '-1'
-    name: '""'
+    name: '"TX Time Sink"'
     nconnections: '1'
     size: '1024'
     srate: samp_rate
@@ -160,7 +217,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [376, 320.0]
+    coordinate: [344, 272.0]
     rotation: 0
     state: true
 - name: uhd_usrp_sink_0
@@ -200,7 +257,7 @@ blocks:
     ant7: TX/RX
     ant8: TX/RX
     ant9: TX/RX
-    bw0: 0.5e6
+    bw0: Bandwidth
     bw1: '0'
     bw10: '0'
     bw11: '0'
@@ -232,7 +289,7 @@ blocks:
     bw7: '0'
     bw8: '0'
     bw9: '0'
-    center_freq0: 3.555e9
+    center_freq0: Freq
     center_freq1: '0'
     center_freq10: '0'
     center_freq11: '0'
@@ -276,7 +333,7 @@ blocks:
     comment: ''
     dev_addr: '""'
     dev_args: '""'
-    gain0: '31'
+    gain0: Gain
     gain1: '0'
     gain10: '0'
     gain11: '0'
@@ -437,13 +494,13 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [376, 160.0]
+    coordinate: [392, 136.0]
     rotation: 0
     state: enabled
 
 connections:
-- [blocks_file_source_0, '0', qtgui_time_sink_x_0, '0']
-- [blocks_file_source_0, '0', uhd_usrp_sink_0, '0']
+- [analog_sig_source_x_0, '0', qtgui_time_sink_x_0_0, '0']
+- [analog_sig_source_x_0, '0', uhd_usrp_sink_0, '0']
 
 metadata:
   file_format: 1
